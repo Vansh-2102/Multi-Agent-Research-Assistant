@@ -5,8 +5,10 @@ import com.agent.researcher.dto.ResearchResponse;
 import com.agent.researcher.service.ResearchService;
 import com.agent.researcher.service.SseEmitterService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @RestController
@@ -23,6 +25,24 @@ public class ResearchController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadDocument(@RequestParam("file") MultipartFile file) {
+        Object response = researchService.uploadDocument(file);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/clear-docs")
+    public ResponseEntity<?> clearDocuments() {
+        Object response = researchService.clearDocuments();
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/indexed-docs")
+    public ResponseEntity<?> getIndexedDocuments() {
+        Object response = researchService.getIndexedDocuments();
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/stream/{topic}")
     public SseEmitter streamProgress(@PathVariable String topic) {
         return sseEmitterService.createEmitter(topic);
@@ -33,3 +53,5 @@ public class ResearchController {
         return ResponseEntity.ok("OK");
     }
 }
+
+

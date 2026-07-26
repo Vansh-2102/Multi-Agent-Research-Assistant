@@ -10,6 +10,9 @@ __pycache__/
 venv/
 ENV/
 .pytest_cache/
+ai-engine/data/
+data/
+
 
 # Java & Maven
 target/

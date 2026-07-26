@@ -2,6 +2,7 @@ from app.config import llm
 from app.graph.state import AgentState
 from app.tools.search import perform_web_search
 from app.tools.publisher import publish_event
+from app.rag.store import query_documents
 
 def planner_node(state: AgentState) -> dict:
     """
@@ -24,21 +25,31 @@ def planner_node(state: AgentState) -> dict:
 
 def researcher_node(state: AgentState) -> dict:
     """
-    Researcher agent node: Takes the plan, performs web searches using perform_web_search,
-    and appends findings to research_data.
+    Researcher agent node: Queries ChromaDB vector store for local document context (RAG),
+    performs DuckDuckGo web searches, and combines all findings into research_data.
     """
     plan = state.get("plan", "")
     topic = state.get("topic", "")
     existing_data = list(state.get("research_data", []))
 
-    publish_event(topic, "RESEARCHER", "Researcher Agent searching DuckDuckGo for live sources...")
+    # 1. Local Document RAG Retrieval from ChromaDB
+    publish_event(topic, "RESEARCHER", "Researcher Agent querying ChromaDB vector store for local knowledge...")
+    local_rag_chunks = query_documents(topic, top_k=4)
 
+    if local_rag_chunks:
+        rag_summary = f"=== LOCAL KNOWLEDGE DOCUMENTS (RAG) ===\n" + "\n---\n".join(local_rag_chunks)
+        existing_data.append(rag_summary)
+        publish_event(topic, "RESEARCHER_RAG", f"Retrieved {len(local_rag_chunks)} relevant context chunks from uploaded documents.")
+
+    # 2. Live Web Search Retrieval via DuckDuckGo
+    publish_event(topic, "RESEARCHER", "Researcher Agent searching DuckDuckGo for live web sources...")
     query = f"{topic} research analysis key insights"
     search_result = perform_web_search(query)
     
-    existing_data.append(search_result)
-    publish_event(topic, "RESEARCHER_COMPLETE", "Web search and data gathering complete.")
+    existing_data.append(f"=== LIVE WEB SEARCH FINDINGS ===\n{search_result}")
+    publish_event(topic, "RESEARCHER_COMPLETE", "Web search and local RAG document gathering complete.")
     return {"research_data": existing_data}
+
 
 
 def writer_node(state: AgentState) -> dict:

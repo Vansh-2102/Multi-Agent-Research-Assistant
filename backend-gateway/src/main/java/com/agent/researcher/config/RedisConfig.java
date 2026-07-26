@@ -10,6 +10,7 @@ import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 
 @Configuration
+@SuppressWarnings("null")
 public class RedisConfig {
 
     @Bean
@@ -32,3 +33,4 @@ public class RedisConfig {
         return container;
     }
 }
+

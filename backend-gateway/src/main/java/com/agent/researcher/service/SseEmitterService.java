@@ -14,7 +14,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Service
+@SuppressWarnings("null")
 public class SseEmitterService {
+
 
     private final Map<String, List<SseEmitter>> topicEmitters = new ConcurrentHashMap<>();
     private final ObjectMapper objectMapper = new ObjectMapper();
