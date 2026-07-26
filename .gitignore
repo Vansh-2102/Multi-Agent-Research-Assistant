@@ -1,0 +1,30 @@
+# Environment variables (Do NOT commit sensitive API keys)
+.env
+*.env.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+.pytest_cache/
+
+# Java & Maven
+target/
+*.class
+*.jar
+*.war
+
+# Node & React
+node_modules/
+dist/
+build/
+
+# IDE & OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
