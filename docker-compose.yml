@@ -15,18 +15,24 @@ services:
       - "8000:8000"
     env_file:
       - ./ai-engine/.env
+    environment:
+      - REDIS_URL=${REDIS_URL:-}
+      - SPRING_REDIS_HOST=${SPRING_REDIS_HOST:-redis}
+      - SPRING_REDIS_PORT=${SPRING_REDIS_PORT:-6379}
 
   backend-gateway:
     build: ./backend-gateway
     container_name: backend-gateway
     ports:
       - "8080:8080"
+    env_file:
+      - ./ai-engine/.env
     environment:
-      - SPRING_REDIS_HOST=redis
-      - SPRING_REDIS_PORT=6379
+      - REDIS_URL=${REDIS_URL:-}
+      - SPRING_REDIS_HOST=${SPRING_REDIS_HOST:-redis}
+      - SPRING_REDIS_PORT=${SPRING_REDIS_PORT:-6379}
       - PYTHON_SERVICE_URL=http://ai-engine:8000
     depends_on:
-      - redis
       - ai-engine
 
   frontend:

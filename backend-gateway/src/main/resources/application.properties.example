@@ -2,13 +2,13 @@ server.port=8080
 
 spring.application.name=backend-gateway
 
-# Redis configuration (supports Upstash Redis via REDIS_URL or host/port/password/ssl)
+# Redis Configuration (Supports Upstash Redis via REDIS_URL or local Redis fallback)
+# Example Upstash URL: rediss://default:YOUR_PASSWORD@YOUR_UPSTASH_ENDPOINT.upstash.io:6379
 spring.data.redis.url=${REDIS_URL:redis://localhost:6379}
 
 # Increase file upload limits for RAG document uploads
 spring.servlet.multipart.max-file-size=50MB
 spring.servlet.multipart.max-request-size=50MB
 
+# Python AI Engine Service URL
 python.service.url=${PYTHON_SERVICE_URL:http://localhost:8000}
-
-
