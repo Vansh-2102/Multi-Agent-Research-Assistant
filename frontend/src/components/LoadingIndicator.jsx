@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Bot, FileText, Search, PenTool, Cpu, CheckCircle2, ShieldCheck } from 'lucide-react';
+import { API_BASE_URL } from '../services/api';
 
 const LoadingIndicator = ({ topic }) => {
   const [activeStep, setActiveStep] = useState('PLANNER');
@@ -8,8 +9,7 @@ const LoadingIndicator = ({ topic }) => {
   useEffect(() => {
     if (!topic) return;
 
-    const apiBaseUrl = import.meta.env.VITE_API_URL || 'https://backend-gateway-ut97.onrender.com/api/v1';
-    const streamUrl = `${apiBaseUrl}/research/stream/${encodeURIComponent(topic)}`;
+    const streamUrl = `${API_BASE_URL}/research/stream/${encodeURIComponent(topic)}`;
     
     const eventSource = new EventSource(streamUrl);
 

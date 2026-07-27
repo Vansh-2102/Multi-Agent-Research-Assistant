@@ -1,6 +1,23 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://backend-gateway-ut97.onrender.com/api/v1';
+const rawUrl = import.meta.env.VITE_API_URL || 'https://backend-gateway-ut97.onrender.com/api/v1';
+
+const formatApiUrl = (url) => {
+  let cleaned = (url || '').trim().replace(/\/+$/, '');
+  if (cleaned.endsWith('/research')) {
+    cleaned = cleaned.substring(0, cleaned.length - 9);
+  }
+  if (!cleaned.endsWith('/api/v1')) {
+    if (cleaned.endsWith('/api')) {
+      cleaned = `${cleaned}/v1`;
+    } else {
+      cleaned = `${cleaned}/api/v1`;
+    }
+  }
+  return cleaned;
+};
+
+export const API_BASE_URL = formatApiUrl(rawUrl);
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
