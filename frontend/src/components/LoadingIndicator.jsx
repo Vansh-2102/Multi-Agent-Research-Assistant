@@ -8,7 +8,7 @@ const LoadingIndicator = ({ topic }) => {
   useEffect(() => {
     if (!topic) return;
 
-    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1';
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'https://backend-gateway-ut97.onrender.com/api/v1';
     const streamUrl = `${apiBaseUrl}/research/stream/${encodeURIComponent(topic)}`;
     
     const eventSource = new EventSource(streamUrl);

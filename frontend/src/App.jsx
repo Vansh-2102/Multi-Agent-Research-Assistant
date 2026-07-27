@@ -32,7 +32,7 @@ function App() {
         err.response?.data?.detail ||
         err.response?.data?.message ||
         err.message ||
-        'Failed to connect to Spring Boot Gateway server (http://localhost:8080).';
+        'Failed to connect to Spring Boot Gateway server (https://backend-gateway-ut97.onrender.com).';
       setError(errorMessage);
     } finally {
       setLoading(false);
