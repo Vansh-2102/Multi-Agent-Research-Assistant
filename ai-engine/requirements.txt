@@ -8,10 +8,9 @@ pydantic
 python-dotenv
 redis
 qdrant-client
-fastembed
 pypdf
-sentence-transformers
 python-multipart
 langchain-text-splitters
+requests
 
 

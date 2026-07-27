@@ -3,7 +3,6 @@ import uuid
 import requests
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, VectorParams, PointStruct
-from sentence_transformers import SentenceTransformer
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from app.config import HF_TOKEN, HF_EMBEDDING_MODEL
 
@@ -16,56 +15,50 @@ QDRANT_API_KEY = os.getenv("QDRANT_API_KEY", "").strip()
 COLLECTION_NAME = "research_docs"
 VECTOR_SIZE = 384  # Standard size for MiniLM / bge-small-en-v1.5
 
-class ResilientEmbedder:
+class CloudEmbedder:
     """
-    Encodes text into 384-dimensional dense vectors.
-    Tries Hugging Face Inference API first if HF_TOKEN is available,
-    falling back seamlessly to local SentenceTransformer CPU execution.
+    Encodes text into 384-dimensional dense vectors using Hugging Face Cloud Inference API.
+    Lightweight, fast, and eliminates heavy local PyTorch / SentenceTransformers dependencies.
     """
     def __init__(self, hf_token: str, model_name: str):
         self.hf_token = hf_token if (hf_token and not hf_token.startswith("your_")) else None
         self.model_name = model_name or "BAAI/bge-small-en-v1.5"
-        self._local_model = None
-
-    def _get_local_model(self):
-        if self._local_model is None:
-            print("[RAG Qdrant] Loading local SentenceTransformer model (all-MiniLM-L6-v2)...")
-            self._local_model = SentenceTransformer("all-MiniLM-L6-v2")
-        return self._local_model
 
     def encode(self, texts: list[str]) -> list[list[float]]:
         if not texts:
             return []
 
-        if self.hf_token:
-            try:
-                url = f"https://api-inference.huggingface.co/pipeline/feature-extraction/{self.model_name}"
-                headers = {"Authorization": f"Bearer {self.hf_token}"}
-                response = requests.post(url, headers=headers, json={"inputs": texts}, timeout=10)
-                if response.status_code == 200:
-                    data = response.json()
-                    # Handle pooled embedding or array of embeddings
-                    if isinstance(data, list) and len(data) > 0:
-                        if isinstance(data[0], list) and isinstance(data[0][0], float):
-                            return data
-                        elif isinstance(data[0], list) and isinstance(data[0][0], list):
-                            # Mean pooling over token embeddings if needed
-                            pooled = []
-                            for doc_tokens in data:
-                                dim = len(doc_tokens[0])
-                                avg = [sum(doc_tokens[i][d] for i in range(len(doc_tokens))) / len(doc_tokens) for d in range(dim)]
-                                pooled.append(avg)
-                            return pooled
-            except Exception as e:
-                print(f"[RAG Qdrant] Hugging Face API request failed ({e}). Falling back to local model.")
+        if not self.hf_token:
+            print("[RAG Qdrant] Warning: No HF_TOKEN provided for cloud embeddings.")
+            return []
 
-        # Local CPU fallback
-        local_model = self._get_local_model()
-        embeddings = local_model.encode(texts, convert_to_numpy=True)
-        return embeddings.tolist()
+        try:
+            url = f"https://api-inference.huggingface.co/pipeline/feature-extraction/{self.model_name}"
+            headers = {"Authorization": f"Bearer {self.hf_token}"}
+            response = requests.post(url, headers=headers, json={"inputs": texts}, timeout=15)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if isinstance(data, list) and len(data) > 0:
+                    if isinstance(data[0], list) and isinstance(data[0][0], float):
+                        return data
+                    elif isinstance(data[0], list) and isinstance(data[0][0], list):
+                        # Mean pooling over token embeddings
+                        pooled = []
+                        for doc_tokens in data:
+                            dim = len(doc_tokens[0])
+                            avg = [sum(doc_tokens[i][d] for i in range(len(doc_tokens))) / len(doc_tokens) for d in range(dim)]
+                            pooled.append(avg)
+                        return pooled
+            else:
+                print(f"[RAG Qdrant] Hugging Face Cloud API error ({response.status_code}): {response.text}")
+        except Exception as e:
+            print(f"[RAG Qdrant] Hugging Face Cloud API request failed: {e}")
+
+        return []
 
 # Initialize Embedder
-embedder = ResilientEmbedder(hf_token=HF_TOKEN, model_name=HF_EMBEDDING_MODEL)
+embedder = CloudEmbedder(hf_token=HF_TOKEN, model_name=HF_EMBEDDING_MODEL)
 
 # Initialize Qdrant Client (Remote Cloud if URL provided, else Local Disk)
 def get_qdrant_client() -> QdrantClient:
@@ -93,7 +86,7 @@ ensure_collection_exists()
 
 def ingest_document_text(filename: str, text: str) -> int:
     """
-    Splits document text into chunks, generates vector embeddings, and indexes them into Qdrant.
+    Splits document text into chunks, generates cloud vector embeddings, and indexes them into Qdrant.
     """
     if not text or not text.strip():
         return 0
@@ -110,8 +103,11 @@ def ingest_document_text(filename: str, text: str) -> int:
         return 0
 
     embeddings = embedder.encode(chunks)
-    points = []
+    if not embeddings:
+        print(f"[RAG Qdrant] Could not generate embeddings for '{filename}'. Check HF_TOKEN.")
+        return 0
 
+    points = []
     for idx, (chunk, vector) in enumerate(zip(chunks, embeddings)):
         point_id = str(uuid.uuid4())
         payload = {
@@ -141,7 +137,6 @@ def query_documents(query: str, top_k: int = 4) -> list[str]:
     query_vector = query_vectors[0]
 
     try:
-        # Use client.search or client.query_points
         if hasattr(client, "search"):
             hits = client.search(
                 collection_name=COLLECTION_NAME,
