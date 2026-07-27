@@ -14,6 +14,16 @@ Users can input any research topic or upload custom knowledge documents (PDF, TX
 
 ---
 
+## 🌐 Live Deployment Endpoints
+
+| Microservice / Layer | Live URL | Platform |
+| :--- | :--- | :--- |
+| **Python AI Engine (ML)** | [`https://multi-agent-research-assistant-zpwq.onrender.com`](https://multi-agent-research-assistant-zpwq.onrender.com) | Render |
+| **Backend Gateway (Spring Boot)** | [`https://backend-gateway-ut97.onrender.com`](https://backend-gateway-ut97.onrender.com) | Render |
+| **Frontend Dashboard (React UI)** | `https://multi-agent-research-assistant.vercel.app` *(or your Vercel/Netlify URL)* | Vercel / Netlify |
+
+---
+
 ## 🏗️ System Architecture
 
 ```
