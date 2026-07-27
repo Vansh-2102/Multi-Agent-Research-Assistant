@@ -83,7 +83,7 @@ const DocumentUploader = ({ onDocumentUploaded }) => {
         err.response?.data?.detail ||
         err.response?.data?.message ||
         err.message ||
-        'Failed to upload and index document in ChromaDB.';
+        'Failed to upload and index document in Qdrant.';
       setErrorMessage(msg);
     } finally {
       setUploading(false);
@@ -91,7 +91,7 @@ const DocumentUploader = ({ onDocumentUploaded }) => {
   };
 
   const handleClearIndex = async () => {
-    if (!window.confirm('Are you sure you want to clear all indexed knowledge documents from ChromaDB?')) {
+    if (!window.confirm('Are you sure you want to clear all indexed knowledge documents from Qdrant?')) {
       return;
     }
 
@@ -161,7 +161,7 @@ const DocumentUploader = ({ onDocumentUploaded }) => {
                   Knowledge Base Document Indexer
                 </h3>
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-[10px] font-medium text-cyan-300">
-                  <Sparkles className="w-2.5 h-2.5" /> ChromaDB RAG
+                  <Sparkles className="w-2.5 h-2.5" /> Qdrant RAG
                 </span>
               </div>
               <p className="text-xs text-slate-400 mt-1">

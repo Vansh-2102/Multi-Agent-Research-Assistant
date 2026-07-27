@@ -19,14 +19,14 @@ services:
       - REDIS_URL=${REDIS_URL:-}
       - SPRING_REDIS_HOST=${SPRING_REDIS_HOST:-redis}
       - SPRING_REDIS_PORT=${SPRING_REDIS_PORT:-6379}
+      - QDRANT_URL=${QDRANT_URL:-}
+      - QDRANT_API_KEY=${QDRANT_API_KEY:-}
 
   backend-gateway:
     build: ./backend-gateway
     container_name: backend-gateway
     ports:
       - "8080:8080"
-    env_file:
-      - ./ai-engine/.env
     environment:
       - REDIS_URL=${REDIS_URL:-}
       - SPRING_REDIS_HOST=${SPRING_REDIS_HOST:-redis}

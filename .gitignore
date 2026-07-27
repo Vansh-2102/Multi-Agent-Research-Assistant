@@ -1,6 +1,8 @@
-# Environment variables (Do NOT commit sensitive API keys)
+# Environment variables & local properties (Do NOT commit sensitive credentials)
 .env
 *.env.local
+backend-gateway/src/main/resources/application.properties
+
 
 # Python
 __pycache__/

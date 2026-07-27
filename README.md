@@ -4,10 +4,10 @@
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.4-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-009688.svg)](https://fastapi.tiangolo.com/)
 [![LangGraph](https://img.shields.io/badge/LangGraph-Multi--Agent-orange.svg)](https://langchain-ai.github.io/langgraph/)
-[![ChromaDB](https://img.shields.io/badge/ChromaDB-Vector%20Store-red.svg)](https://www.trychroma.com/)
+[![Qdrant](https://img.shields.io/badge/Qdrant-Vector%20Store-red.svg)](https://qdrant.tech/)
 [![Groq Llama 3.3](https://img.shields.io/badge/LLM-Groq%20Llama%203.3%2070B-purple.svg)](https://groq.com/)
 
-An autonomous, enterprise-grade **Multi-Agent Deep Research Assistant System** powered by **FastAPI**, **LangGraph**, **Groq (Llama 3.3 70B)**, **ChromaDB RAG**, **Spring Boot 3**, **Redis**, and a **React UI**. 
+An autonomous, enterprise-grade **Multi-Agent Deep Research Assistant System** powered by **FastAPI**, **LangGraph**, **Groq (Llama 3.3 70B)**, **Qdrant Vector RAG**, **Spring Boot 3**, **Redis**, and a **React UI**. 
 
 Users can input any research topic or upload custom knowledge documents (PDF, TXT, MD) to trigger a team of specialized AI agents (Planner, Researcher, Writer, and Peer Reviewer) to synthesize live, structured research reports in real time.
 
@@ -38,7 +38,7 @@ Users can input any research topic or upload custom knowledge documents (PDF, TX
                     Semantic Retrieval  │             │ Live Search
                                         ▼             ▼
                         ┌──────────────────┐    ┌─────────────┐
-                        │ ChromaDB Vector  │    │ DuckDuckGo  │
+                        │  Qdrant Vector   │    │ DuckDuckGo  │
                         │ Knowledge Store  │    │ Web Search  │
                         └──────────────────┘    └─────────────┘
 ```
@@ -49,13 +49,13 @@ Users can input any research topic or upload custom knowledge documents (PDF, TX
 
 - **🤖 Multi-Agent LangGraph Pipeline**:
   - **Planner Agent**: Generates a 3-point structured outline for targeted research.
-  - **Researcher Agent (Hybrid RAG)**: Queries local persistent **ChromaDB** vector store for custom document chunks alongside live **DuckDuckGo** web search.
+  - **Researcher Agent (Hybrid RAG)**: Queries **Qdrant** vector store for custom document chunks alongside live **DuckDuckGo** web search.
   - **Writer Agent**: Synthesizes all gathered evidence and previous review feedback into markdown reports using **Groq Llama 3.3 70B**.
   - **Peer Reviewer Agent**: Evaluates report quality and loops back for revisions if required (max 2 revision passes).
 - **📚 Retrieval-Augmented Generation (RAG)**:
   - Drag-and-drop file uploader supporting **PDF, TXT, and Markdown** files.
   - Generates 384-dimensional vector embeddings powered by **Hugging Face Cloud Inference API** (`BAAI/bge-small-en-v1.5` or `all-MiniLM-L6-v2`) with automatic fallback to local CPU execution.
-  - Persistent ChromaDB disk storage under `ai-engine/data/chroma_db`.
+  - Persistent Qdrant storage under `ai-engine/data/qdrant_db` (or remote Qdrant Cloud cluster via `QDRANT_URL`).
   - On-demand **"Clear Knowledge Base"** action to reset vector indexes.
 - **⚡ Real-Time Progress Streaming (SSE)**:
   - Agent progress and state transitions are broadcast in real-time to the React dashboard using **Redis Pub/Sub** and **Server-Sent Events (SSE)**.
@@ -74,8 +74,8 @@ Users can input any research topic or upload custom knowledge documents (PDF, TX
 | **Frontend** | React 18, Vite, Tailwind CSS, Lucide React, Axios, html2pdf.js |
 | **Backend Gateway** | Java 17, Spring Boot 3.2, Spring Data Redis, Lombok, RestTemplate, SseEmitter |
 | **AI / Microservice** | Python 3.11, FastAPI, LangGraph, LangChain, Groq API (Llama 3.3 70B), Pydantic |
-| **Vector DB / RAG** | ChromaDB, Hugging Face Inference API (`BAAI/bge-small-en-v1.5`), `pypdf`, `langchain-text-splitters` |
-| **Caching & Pub/Sub**| Redis 7 (Alpine) |
+| **Vector DB / RAG** | Qdrant (`qdrant-client`), Hugging Face Inference API (`BAAI/bge-small-en-v1.5`), `pypdf`, `langchain-text-splitters` |
+| **Caching & Pub/Sub**| Redis 7 (Alpine) / Upstash Redis |
 | **Containerization** | Docker & Docker Compose |
 
 ---
@@ -88,16 +88,17 @@ multi-agent-system/
 │   ├── app/
 │   │   ├── agents/             # LangGraph agent node logic (Planner, Researcher, Writer, Reviewer)
 │   │   ├── graph/              # LangGraph state graph definitions
-│   │   ├── rag/                # ChromaDB vector store engine & Hugging Face embeddings
+│   │   ├── rag/                # Qdrant vector store engine & Hugging Face embeddings
 │   │   ├── tools/              # Search (DuckDuckGo) & Redis event publisher tools
 │   │   ├── config.py           # Environment variables (Groq & HF keys)
 │   │   └── main.py             # FastAPI entry point & API endpoints
-│   ├── data/                   # Persistent ChromaDB vector storage
+│   ├── data/                   # Persistent Qdrant vector storage
 │   ├── Dockerfile
 │   └── requirements.txt
 ├── backend-gateway/            # Spring Boot Microservice Gateway
 │   ├── src/main/java/com/agent/researcher/
 │   │   ├── config/             # Redis & CORS security configuration
+
 │   │   ├── controller/         # Research REST endpoints & SSE controller
 │   │   ├── dto/                # Request / Response Data Transfer Objects
 │   │   └── service/            # Business logic, Redis caching, & Python proxy

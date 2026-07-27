@@ -7,10 +7,10 @@ langchain-community
 pydantic
 python-dotenv
 redis
-chromadb
+qdrant-client
+fastembed
 pypdf
 sentence-transformers
-langchain-chroma
 python-multipart
 langchain-text-splitters
 

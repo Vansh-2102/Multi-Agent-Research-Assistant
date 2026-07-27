@@ -8,7 +8,7 @@ from pypdf import PdfReader
 
 app = FastAPI(
     title="Multi-Agent Research Assistant API",
-    description="Core Python AI engine powered by FastAPI, LangGraph, Groq, ChromaDB, and DuckDuckGo Search",
+    description="Core Python AI engine powered by FastAPI, LangGraph, Groq, Qdrant, and DuckDuckGo Search",
     version="1.0.0"
 )
 
@@ -38,7 +38,7 @@ def clear_docs():
         clear_indexed_documents()
         return {
             "status": "success",
-            "message": "Successfully cleared all indexed knowledge documents from ChromaDB.",
+            "message": "Successfully cleared all indexed knowledge documents from Qdrant.",
             "indexed_documents": []
         }
     except Exception as e:

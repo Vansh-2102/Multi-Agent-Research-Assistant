@@ -52,7 +52,7 @@ function App() {
               <h1 className="text-lg font-bold bg-gradient-to-r from-slate-100 via-slate-200 to-cyan-400 bg-clip-text text-transparent">
                 Multi-Agent AI Research Studio
               </h1>
-              <p className="text-xs text-slate-400 font-medium">FastAPI • LangGraph • Groq Llama 3.3 • ChromaDB RAG • Spring Boot</p>
+              <p className="text-xs text-slate-400 font-medium">FastAPI • LangGraph • Groq Llama 3.3 • Qdrant RAG • Spring Boot</p>
             </div>
           </div>
           <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/80 border border-slate-700/60 text-xs text-slate-300 font-mono">
@@ -70,11 +70,11 @@ function App() {
             Autonomous Deep <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Research Pipeline</span>
           </h2>
           <p className="text-sm text-slate-400 leading-relaxed">
-            Upload domain knowledge documents to embed into ChromaDB vector store, or enter any topic to trigger AI agents (Planner, Researcher, Writer & Peer Reviewer) for hybrid RAG and live web synthesis.
+            Upload domain knowledge documents to embed into Qdrant vector store, or enter any topic to trigger AI agents (Planner, Researcher, Writer & Peer Reviewer) for hybrid RAG and live web synthesis.
           </p>
         </div>
 
-        {/* Document Uploader Component (ChromaDB RAG) */}
+        {/* Document Uploader Component (Qdrant RAG) */}
         <DocumentUploader />
 
         {/* Search Bar Component */}

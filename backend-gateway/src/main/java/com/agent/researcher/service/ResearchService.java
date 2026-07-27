@@ -113,7 +113,7 @@ public class ResearchService {
             restTemplate.delete(targetUrl);
             return java.util.Map.of(
                 "status", "success",
-                "message", "Successfully cleared all indexed knowledge documents from ChromaDB",
+                "message", "Successfully cleared all indexed knowledge documents from Qdrant",
                 "indexed_documents", java.util.List.of()
             );
         } catch (Exception e) {

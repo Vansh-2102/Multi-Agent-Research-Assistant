@@ -25,15 +25,15 @@ def planner_node(state: AgentState) -> dict:
 
 def researcher_node(state: AgentState) -> dict:
     """
-    Researcher agent node: Queries ChromaDB vector store for local document context (RAG),
+    Researcher agent node: Queries Qdrant vector store for local document context (RAG),
     performs DuckDuckGo web searches, and combines all findings into research_data.
     """
     plan = state.get("plan", "")
     topic = state.get("topic", "")
     existing_data = list(state.get("research_data", []))
 
-    # 1. Local Document RAG Retrieval from ChromaDB
-    publish_event(topic, "RESEARCHER", "Researcher Agent querying ChromaDB vector store for local knowledge...")
+    # 1. Local Document RAG Retrieval from Qdrant
+    publish_event(topic, "RESEARCHER", "Researcher Agent querying Qdrant vector store for local knowledge...")
     local_rag_chunks = query_documents(topic, top_k=4)
 
     if local_rag_chunks:
