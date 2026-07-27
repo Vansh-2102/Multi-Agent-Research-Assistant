@@ -31,7 +31,7 @@ services:
       - REDIS_URL=${REDIS_URL:-}
       - SPRING_REDIS_HOST=${SPRING_REDIS_HOST:-redis}
       - SPRING_REDIS_PORT=${SPRING_REDIS_PORT:-6379}
-      - PYTHON_SERVICE_URL=http://ai-engine:8000
+      - PYTHON_SERVICE_URL=${PYTHON_SERVICE_URL:-https://multi-agent-research-assistant-zpwq.onrender.com}
     depends_on:
       - ai-engine
 

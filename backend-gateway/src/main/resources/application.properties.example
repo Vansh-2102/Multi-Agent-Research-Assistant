@@ -11,4 +11,4 @@ spring.servlet.multipart.max-file-size=50MB
 spring.servlet.multipart.max-request-size=50MB
 
 # Python AI Engine Service URL
-python.service.url=${PYTHON_SERVICE_URL:http://localhost:8000}
+python.service.url=${PYTHON_SERVICE_URL:https://multi-agent-research-assistant-zpwq.onrender.com}
